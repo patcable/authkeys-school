@@ -41,27 +41,38 @@ while($runq->fetch()) {
     }
     $count = 0;
     if ($md5 !~ $db_md5 || $sha1 !~ $db_sha1) {
+        # This is what executes if either of the hashes don't match
+        # what's in the DB. 
         print "Danger! DB and File dont match. Script continuing...\n";
     }
     if ($md5 =~ $db_md5 && $sha1 =~ $db_sha1) {
-        print "Files match. Quitting...";
+        # This executes if there's a hash match.
+        print "Files match. Quitting...\n";
         exit 0;
     }
     $count++;
 }
 
+# If we've made it this far, we've got some more checking to do.
+
 # Get list of allowed users
-$query = "SELECT authusers FROM authusers WHERE username='$USER'";
+$query = "SELECT authusers.authusers AND usercerts.cert FROM authusers,usercerts WHERE authusers.username='$USER' AND authusers.username = usercerts.user";
 $runq = $dbh->prepare($query);
 $runq->execute();
-$runq->bind_columns(\$allowed_username);
+$runq->bind_columns(\$allowed_username, \$allowed_cert);
 while($runq->fetch()) {
         push(@allowed_usernames,$allowed_username);
+        push(@allowed_certs,$allowed_cert);
 }
 
 if ($debug) {
     print "DEBUG: Allowed Usernames: ";
     foreach(@allowed_usernames) {
+        print $_ . " ";
+    }
+    print "\n";
+
+    foreach(@allowed_certs) {
         print $_ . " ";
     }
     print "\n";
