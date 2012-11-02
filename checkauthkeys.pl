@@ -36,10 +36,10 @@ $runq = $dbh->prepare($query);
 $runq->execute();
 $runq->bind_columns(\$db_md5, \$db_sha1);
 while($runq->fetch()) {
-    $count = 0;
-    if (!$db_md5 || !$db_sha1) {
-        print "No result...\n";
+    if ($debug) {
+        print "DEBUG: db_md5 - $db_md5, db_sha1 - $db_sha1\n";
     }
+    $count = 0;
     if ($count > 1) {
         print "Danger! More than one result returned.\n";
     }
