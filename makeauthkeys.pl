@@ -6,7 +6,7 @@ use Digest::MD5 qw(md5_hex);
 use Digest::SHA1 qw(sha1_hex);
 
 # debug mode - more verbose data
-$debug = TRUE;
+#$debug = TRUE;
 
 # bring in $passwd externally (db)
 require("../authkeys-dbpasswd.pl");
@@ -41,8 +41,29 @@ if ($debug) {
     print "\n";
 }
 
+# Remove existing .ssh/authorized_keys
+unlink("$HOME/.ssh/authorized_keys");
+open SSHAUTHKEYS, "+>", "$HOME/.ssh/authorized_keys" or die $!;
+
+# Write new .ssh/authorized_keys
+$count = 0;
 foreach(@allowed_usernames) {
-    $count = 0;
-    print $allowed_certs[$count] . " " . $_ . "\n";
+    print SSHAUTHKEYS $allowed_certs[$count] . " " . $_ . "\n";
     $count++;
 }
+
+# Hash new .ssh/authorized_keys
+seek SSHAUTHKEYS,0,0;
+$SSHAUTHKEYS = <SSHAUTHKEYS>;
+$md5 = md5_hex($SSHAUTHKEYS);
+$sha1 = sha1_hex($SSHAUTHKEYS);
+
+# Update DB. We do a delete than an insert (rather than an update)
+# because it's possible this user doesn't have an entry, yet.
+$query = "DELETE FROM authkeys_hashes WHERE user='$USER' LIMIT 1";
+$runq = $dbh->prepare($query);
+$runq->execute();
+$query = "INSERT INTO authkeys_hashes VALUES('$USER', '$md5', '$sha1')";
+$runq = $dbh->prepare($query);
+$runq->execute();
+
