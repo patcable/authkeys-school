@@ -40,11 +40,12 @@ while($runq->fetch()) {
         print "DEBUG: db_md5 - $db_md5, db_sha1 - $db_sha1\n";
     }
     $count = 0;
-    if ($count > 1) {
-        print "Danger! More than one result returned.\n";
-    }
     if ($md5 !~ $db_md5 || $sha1 !~ $db_sha1) {
-        print "Danger! DB and File dont match\n";
+        print "Danger! DB and File dont match. Script continuing...\n";
+    }
+    if ($md5 =~ $db_md5 && $sha1 =~ $db_sha1) {
+        print "Files match. Quitting...";
+        exit 0;
     }
     $count++;
 }
