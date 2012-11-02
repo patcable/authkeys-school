@@ -56,7 +56,7 @@ while($runq->fetch()) {
 # If we've made it this far, we've got some more checking to do.
 
 # Get list of allowed users
-$query = "SELECT authusers.authusers AND usercerts.cert FROM authusers,usercerts WHERE authusers.username='$USER' AND authusers.username = usercerts.user";
+$query = "SELECT authusers.authusers,usercerts.cert FROM authusers,usercerts WHERE authusers.username='$USER' AND authusers.username = usercerts.user";
 $runq = $dbh->prepare($query);
 $runq->execute();
 $runq->bind_columns(\$allowed_username, \$allowed_cert);
