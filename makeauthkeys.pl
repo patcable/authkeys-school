@@ -5,17 +5,12 @@ use Env qw($USER $HOME);
 use Digest::MD5 qw(md5_hex);
 use Digest::SHA1 qw(sha1_hex);
 
-# debug mode - more verbose data
-#$debug = TRUE;
-
+# bring in global settings
+require("authkeys-config.pl");
 # bring in $passwd externally (db)
-require("../authkeys-dbpasswd.pl");
+require($pwfilelocation);
 
 # Connect to DB
-$db = "authkeys";
-$host = "localhost";
-$userid = "authkeys";
-$connectionInfo = "dbi:mysql:$db;$host";
 $dbh = DBI->connect($connectionInfo,$userid,$passwd);
 
 # Get list of allowed users

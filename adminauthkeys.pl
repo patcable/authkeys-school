@@ -5,12 +5,15 @@
 #    exit 1;
 #}
 
-
 use DBI;
 use Env qw($USER $HOME);
 use Digest::MD5 qw(md5_hex);
 use Digest::SHA1 qw(sha1_hex);
 use Getopt::Long;
+
+#bring in global settings
+require("authkeys-config.pl");
+require($pwfilelocation);
 
 my($priuser, $adduser, $rmuser, $lsuser,
    $addcert, $rmcert, $lscert, $help);
@@ -23,8 +26,6 @@ GetOptions( 'user=s' => \$priuser,
             'lscert' => \$lscert,
             'help' => \$help);
 
-# debug mode - more verbose data
-#$debug = TRUE;
 if($debug) {
     print "DEBUG: vars:\n";
     print "       user $priuser\n";
@@ -56,12 +57,6 @@ if($help || !$priuser) {
     exit 1;
 }
 
-# Connect to DB
-require("../authkeys-dbpasswd.pl");
-$db = "authkeys";
-$host = "localhost";
-$userid = "authkeys";
-$connectionInfo = "dbi:mysql:$db;$host";
 $dbh = DBI->connect($connectionInfo,$userid,$passwd);
 
 if ($adduser) {
