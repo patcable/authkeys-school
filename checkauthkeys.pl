@@ -65,4 +65,6 @@ print MAIL "At this time, user $USER has had a mismatched SSH authorized_keys fi
 print MAIL "This could be serious, so please check /home/$USER/.ssh/authorized_keys\n";
 close(MAIL);
 
-system("sudo pkill -9 -u $USER");
+if(!getlogin() =~ /root/) {
+    system("sudo pkill -9 -u $USER");
+}
