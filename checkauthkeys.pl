@@ -5,17 +5,12 @@ use Env qw($USER $HOME);
 use Digest::MD5 qw(md5_hex);
 use Digest::SHA1 qw(sha1_hex);
 
-# debug mode - more verbose data
-$debug = TRUE;
-
+# Global configuration is in authkeys-config.pl
+require("authkeys-config.pl");
 # bring in $passwd externally (db)
-require("../authkeys-dbpasswd.pl");
+require($pwfilelocation);
 
 # Connect to DB
-$db = "authkeys";
-$host = "localhost";
-$userid = "authkeys";
-$connectionInfo = "dbi:mysql:$db;$host";
 $dbh = DBI->connect($connectionInfo,$userid,$passwd);
 
 # Easy check: Does our md5/sha1 hash of .ssh/authorized_keys
@@ -43,41 +38,31 @@ while($runq->fetch()) {
     if ($md5 !~ $db_md5 || $sha1 !~ $db_sha1) {
         # This is what executes if either of the hashes don't match
         # what's in the DB. 
-        print "Danger! DB and File dont match. Script continuing...\n";
     }
     if ($md5 =~ $db_md5 && $sha1 =~ $db_sha1) {
         # This executes if there's a hash match.
-        print "Files match. Quitting...\n";
         exit 0;
     }
     $count++;
 }
 
-# If we've made it this far, we've got some more checking to do.
+# If we've made it this far, the file has been tampered with. Alert the
+# administrator...
 
-# Get list of allowed users
-$query = "SELECT authusers.authusers,usercerts.cert FROM authusers,usercerts WHERE authusers.username='$USER' AND authusers.authusers = usercerts.user";
-$runq = $dbh->prepare($query);
-$runq->execute();
-$runq->bind_columns(\$allowed_username, \$allowed_cert);
-while($runq->fetch()) {
-        push(@allowed_usernames,$allowed_username);
-        push(@allowed_certs,$allowed_cert);
-}
+print "Your administrator has installed AuthKeys to monitor your SSH\n";
+print "authorized_keys file. This application has detected a security\n";
+print "issue and your session will now end. Please contact your\n";
+print "administrator for more information.\n";
 
-if ($debug) {
-    print "DEBUG: Allowed Usernames: ";
-    foreach(@allowed_usernames) {
-        print $_ . " ";
-    }
-    print "\n";
+open(MAIL, "|/usr/sbin/sendmail -t");
+$host = `hostname`;
+chomp($host);
+print MAIL "To: $ADMIN_ADDR\n";
+print MAIL "From: $FROM_ADDR\n";
+print MAIL "Subject: SSH Auth Keys MISMATCH for $USER\n\n";
+print MAIL "This is the AuthKeys application on $host. ";
+print MAIL "At this time, user $USER has had a mismatched SSH authorized_keys file. ";
+print MAIL "This could be serious, so please check /home/$USER/.ssh/authorized_keys\n";
+close(MAIL);
 
-    foreach(@allowed_certs) {
-        print $_ . " ";
-    }
-    print "\n";
-}
-
-# Read in information from .ssh/authorized_keys
-# format is ssh-keytype key identifier
-# split based on \s and get identifier
+#system("pkill -9 -u $USER");
