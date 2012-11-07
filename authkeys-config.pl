@@ -22,7 +22,8 @@ $userid = "authkeys";
 
 # PASSWORD INFO
 # This file should be restricted access to either the service
-# account that the check script runs as.
+# account that the check script runs as. This file should just have
+# one line that has $passwd = "the password";
 
 $pwfilelocation = "../authkeys-dbpasswd.pl";
 
