@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
-#if(getlogin() !~ /root/) {
-#    print "Sorry, this app must be run as root.\n";
-#    exit 1;
-#}
+if(getlogin() !~ /root/) {
+    print "Sorry, this app must be run as root.\n";
+    exit 1;
+}
 
 use DBI;
 use Env qw($USER $HOME);
