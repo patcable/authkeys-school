@@ -23,3 +23,14 @@ Upon any failure, an email is sent to $ADMIN_USER letting them know that somethi
 In production? Questionable.
 
 As a thought experiment? Sure.
+
+## How do I set it up?
+
+1. Create a user that has sudo access
+2. Install the scripts. Setuid the perl "checkauthkeys.pl" script to root. 
+3. Create a database and import the mysql_database.sql file.
+4. Edit authkeys-config.pl accordingly
+5. use "adminauthkeys.pl" to add users and their keys as necessary
+6. Have each user run "makeauthkeys.pl" 
+7. Check that it works as intended by running "checkauthkeys.pl" as a particular user
+8. Enable enforcement by adding "checkauthkeys.pl" to the system shell init script of all installed shells
