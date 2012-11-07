@@ -25,7 +25,7 @@ $userid = "authkeys";
 # account that the check script runs as. This file should just have
 # one line that has $passwd = "the password";
 
-$pwfilelocation = "../authkeys-dbpasswd.pl";
+$pwfilelocation = "/home/cable-test/authkeys-dbpasswd.pl";
 
 # The MySQL dbi string
 $connectionInfo = "dbi:mysql:$db;$host";
