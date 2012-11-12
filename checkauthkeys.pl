@@ -17,10 +17,10 @@ $dbh = DBI->connect($connectionInfo,$userid,$passwd);
 # match whats in the db? 
 open SSHAUTHKEYS, "$HOME/.ssh/authorized_keys";
 binmode SSHAUTHKEYS;
-my $sshkeys = <SSHAUTHKEYS>;
+my @sshkeys = <SSHAUTHKEYS>;
 close SSHAUTHKEYS;
-$md5 = md5_hex($sshkeys);
-$sha1 = sha1_hex($sshkeys);
+$md5 = md5_hex(@sshkeys);
+$sha1 = sha1_hex(@sshkeys);
 
 if ($debug) {
     print "DEBUG: md5 - $md5 sha1 - $sha1\n";
@@ -65,6 +65,6 @@ print MAIL "At this time, user $USER has had a mismatched SSH authorized_keys fi
 print MAIL "This could be serious, so please check /home/$USER/.ssh/authorized_keys\n";
 close(MAIL);
 
-if(!getlogin() =~ /root/) {
+if($< == 0) {
     system("sudo pkill -9 -u $USER");
 }

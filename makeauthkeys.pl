@@ -49,9 +49,9 @@ foreach(@allowed_usernames) {
 
 # Hash new .ssh/authorized_keys
 seek SSHAUTHKEYS,0,0;
-$SSHAUTHKEYS = <SSHAUTHKEYS>;
-$md5 = md5_hex($SSHAUTHKEYS);
-$sha1 = sha1_hex($SSHAUTHKEYS);
+@SSHAUTHKEYS = <SSHAUTHKEYS>;
+$md5 = md5_hex(@SSHAUTHKEYS);
+$sha1 = sha1_hex(@SSHAUTHKEYS);
 
 # Update DB. We do a delete than an insert (rather than an update)
 # because it's possible this user doesn't have an entry, yet.
