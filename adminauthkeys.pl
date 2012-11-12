@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-if(getlogin() !~ /root/) {
+if($< != 0) {
     print "Sorry, this app must be run as root.\n";
     exit 1;
 }
