@@ -25,24 +25,35 @@ Had the file not have a mechanism of monitoring, the system would honor the requ
 ## How do I set it up?
 
 To implement AuthKeys, one must:
+
 1. Check out the current version of AuthKeys using git (git clone https://github.com/patcable/authkeys)
+
+
 2. Copy the files into a globally accessible directory
-   a. It is key to ensure that no one can read the password file. 
+   1. It is key to ensure that no one can read the password file. 
+
 3. Create a MySQL user and database to store the authkeys data
+
 4. Import the MySQL Database (mysql -u user -p databasename < mysql_database.sql)
+
 5. Store the password for the database in a file you define in authkeys-config.pl.
+
 6. Add the appropriate keys to the database with adminauthkeys.pl
    For each user, run: 
    adminauthkeys.pl --user [username] --addcert [path to public key]
+
 7. Link accounts to their authorized users
    For each user, run:
    adminauthkeys.pl --user [username] --adduser [other user to access acct.]
+
 8. Create the appropriate authorized users file for each user
    For each user, run:
    su -c user - makeauthkeys.pl
+
 9. Test accordingly
    1. Ensure a user can ssh to the other user
    2. Ensure that when you change the $HOME/.ssh/authorized_keys file, the you can not log in.
+
 10. Implement system-wide
     Add the checkauthkeys.pl file to all installed shell's system-wide shell init files.
 
